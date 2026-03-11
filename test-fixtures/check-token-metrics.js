@@ -30,10 +30,11 @@ const matchedCodex = job.matchObserverSessionFile({
 assert.ok(matchedCodex, 'should match the observer session fixture');
 assert.equal(path.basename(matchedCodex.filePath), 'token-usage-session.jsonl', 'should match the observer session fixture file');
 
-const claudeUsage = job.readClaudeSessionUsageSnapshot(claudeFixturePath, '2026-03-11T00:00:00.000Z');
+const claudeUsage = job.readClaudeSessionUsageSnapshot(claudeFixturePath, '2026-03-11T00:00:00.000Z', 'nonce-abc123');
 assert.equal(claudeUsage.messageCount, 2, 'should dedupe duplicate Claude message ids');
 assert.equal(claudeUsage.actual_usage.input_plus_output_tokens, 131, 'should sum deduped Claude input+output totals');
 assert.equal(claudeUsage.actual_usage.cache_tokens, 180, 'should sum deduped Claude cache totals');
+assert.equal(claudeUsage.nonceMatched, true, 'should detect the Claude session nonce');
 
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'outsourcing-claude-fixture-'));
 const projectDir = path.join(tempRoot, '-tmp-outsourcing-smoke');
@@ -44,6 +45,7 @@ process.env.OUTSOURCING_CLAUDE_PROJECTS_DIR = tempRoot;
 const matchedClaude = job.matchClaudeSessionFile({
   cwd: '/tmp/outsourcing-smoke',
   startedAt: '2026-03-11T00:00:00.000Z',
+  nonce: 'nonce-abc123',
 });
 assert.ok(matchedClaude, 'should match the Claude session fixture');
 assert.equal(path.basename(matchedClaude.filePath), 'session-a.jsonl', 'should select the Claude fixture file');
@@ -55,6 +57,7 @@ const fakeJobDir = fs.mkdtempSync(path.join(os.tmpdir(), 'outsourcing-job-'));
 const tokenMetrics = job.estimateTokenMetrics(fakeJobDir, {
   createdAt: '2026-03-11T00:00:00.000Z',
   cwd: '/tmp/outsourcing-smoke',
+  claudeSessionNonce: 'nonce-abc123',
   settings: {
     tokenEstimator: {
       claude_base_prompt_weight: 1,

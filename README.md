@@ -171,11 +171,12 @@ This repository now includes a marketplace manifest so the published repo can al
 ## Basic flow
 
 1. Prepare `outsourcing.config.yaml` or a run-specific config.
-2. Start from Claude Code with `/outsourcing ...`.
-3. Claude decomposes the work and emits worker payloads.
-4. The plugin launches Codex workers.
-5. Workers implement and report.
-6. Claude synthesizes the final result.
+2. Claude generates a short session nonce and prints it once in the conversation, for example `outsourcing session nonce: 7f3c2e1a`.
+3. Start from Claude Code with `/outsourcing ...`.
+4. Claude decomposes the work, emits worker payloads, and passes the same nonce to the orchestrator.
+5. The plugin launches Codex workers.
+6. Workers implement and report.
+7. Claude synthesizes the final result.
 
 ## Local plugin test
 
@@ -264,6 +265,14 @@ Claude cache tokens are reported separately:
 - `Claude cache read tokens = cache_read_input_tokens`
 
 Claude session logs may record the same `message.id` multiple times during streaming. Earlier records are partial. The plugin keeps only the last record for each message id to avoid double counting.
+
+For reliable matching when multiple Claude Code sessions are open in the same project, use a short session nonce:
+
+- Claude prints a one-line nonce into the conversation
+- the same nonce is passed to the orchestrator with `--claude-session-nonce`
+- the plugin prefers session files whose message content contains that nonce
+
+Without a nonce, the plugin falls back to a best-effort match using project directory and timestamps.
 
 If a Claude session log cannot be matched, the plugin falls back to the artifact-based estimate.
 

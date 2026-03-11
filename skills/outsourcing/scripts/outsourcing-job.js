@@ -59,7 +59,7 @@ function printHelp() {
   process.stdout.write(`outsourcing - Claude PM / Codex outsourced workers
 
 Usage:
-  outsourcing-job.sh start [--config path] [--jobs-dir path] [--observer|--no-observer] "project context"
+  outsourcing-job.sh start [--config path] [--jobs-dir path] [--observer|--no-observer] [--claude-session-nonce value] "project context"
   outsourcing-job.sh status [--json|--text|--checklist] <jobDir>
   outsourcing-job.sh wait [--cursor CURSOR] [--interval-ms N] [--timeout-ms N] <jobDir>
   outsourcing-job.sh results [--json] <jobDir>
@@ -211,7 +211,26 @@ function buildClaudeUsageTotals(usage) {
   };
 }
 
-function readClaudeSessionUsageSnapshot(filePath, sinceTimestamp) {
+function extractClaudeRowText(row) {
+  const parts = [];
+  if (row == null || typeof row !== 'object') return '';
+  if (typeof row.content === 'string') parts.push(row.content);
+  if (row.message) {
+    if (typeof row.message.content === 'string') {
+      parts.push(row.message.content);
+    } else if (Array.isArray(row.message.content)) {
+      for (const block of row.message.content) {
+        if (!block || typeof block !== 'object') continue;
+        if (typeof block.text === 'string') parts.push(block.text);
+        if (typeof block.thinking === 'string') parts.push(block.thinking);
+        if (typeof block.input === 'string') parts.push(block.input);
+      }
+    }
+  }
+  return parts.join('\n');
+}
+
+function readClaudeSessionUsageSnapshot(filePath, sinceTimestamp, nonce) {
   const snapshot = {
     filePath,
     sessionId: null,
@@ -222,11 +241,13 @@ function readClaudeSessionUsageSnapshot(filePath, sinceTimestamp) {
     messageCount: 0,
     actual_usage: null,
     entries: [],
+    nonceMatched: false,
   };
   const text = readTextIfExists(filePath);
   if (!text) return snapshot;
 
   const sinceMs = sinceTimestamp ? Date.parse(sinceTimestamp) : NaN;
+  const nonceNeedle = String(nonce || '').trim();
   const finalMessages = new Map();
 
   for (const rawLine of text.split(/\r?\n/)) {
@@ -240,6 +261,10 @@ function readClaudeSessionUsageSnapshot(filePath, sinceTimestamp) {
     }
     if (parsed.sessionId && !snapshot.sessionId) snapshot.sessionId = parsed.sessionId;
     if (parsed.cwd && !snapshot.cwd) snapshot.cwd = parsed.cwd;
+    if (nonceNeedle && !snapshot.nonceMatched) {
+      const textValue = extractClaudeRowText(parsed);
+      if (textValue.includes(nonceNeedle)) snapshot.nonceMatched = true;
+    }
     const timestamp = parsed.timestamp || null;
     if (timestamp && !snapshot.firstTimestamp) snapshot.firstTimestamp = timestamp;
     if (timestamp) snapshot.lastTimestamp = timestamp;
@@ -399,10 +424,12 @@ function matchClaudeSessionFile(options) {
   const files = listJsonlFilesRecursive(projectDir).sort();
   let best = null;
   for (const filePath of files) {
-    const snapshot = readClaudeSessionUsageSnapshot(filePath, options.startedAt);
+    const snapshot = readClaudeSessionUsageSnapshot(filePath, options.startedAt, options.nonce);
+    if (options.nonce && !snapshot.nonceMatched) continue;
     if (!snapshot.actual_usage || snapshot.actual_usage.total_tokens <= 0) continue;
     let score = snapshot.recordsAfterSince * 100;
     if (snapshot.cwd === options.cwd) score += 50;
+    if (snapshot.nonceMatched) score += 1000;
     if (snapshot.lastTimestamp && options.startedAt) {
       const diffMs = Math.abs(Date.parse(snapshot.lastTimestamp) - Date.parse(options.startedAt));
       if (Number.isFinite(diffMs)) {
@@ -434,6 +461,7 @@ function hydrateClaudeUsage(jobDir, jobMeta) {
   const session = matchClaudeSessionFile({
     cwd: jobMeta.cwd,
     startedAt: jobMeta.createdAt,
+    nonce: jobMeta.claudeSessionNonce,
   });
   if (!session || !session.actual_usage || toFiniteNumber(session.actual_usage.total_tokens) <= 0) {
     return existing || null;
@@ -446,6 +474,7 @@ function hydrateClaudeUsage(jobDir, jobMeta) {
     session_id: session.sessionId,
     session_started_at: session.firstTimestamp,
     session_last_timestamp: session.lastTimestamp,
+    nonce_matched: Boolean(session.nonceMatched),
   };
   atomicWriteJson(usagePath, payload);
   return payload;
@@ -932,6 +961,7 @@ function cmdStart(options, prompt) {
   if (roundTasks.length === 0) exitWithError(`outsourcing: no tasks for round ${currentRound}`);
 
   const observerRequested = options['no-observer'] ? false : options.observer ? true : config.outsourcing.defaults.observer_mode === 'tmux';
+  const claudeSessionNonce = String(options['claude-session-nonce'] || '').trim() || null;
   const jobId = `${new Date().toISOString().replace(/[:.]/g, '').replace('T', '-').slice(0, 15)}-${crypto.randomBytes(3).toString('hex')}`;
   const jobDir = path.join(jobsDir, `outsourcing-${jobId}`);
   ensureDir(path.join(jobDir, 'members'));
@@ -944,6 +974,7 @@ function cmdStart(options, prompt) {
     maxRound,
     currentRound,
     prompt,
+    claudeSessionNonce,
     settings: {
       timeoutSec,
       maxRetries: Number(config.outsourcing.settings.max_retries || config.outsourcing.settings.maxRetries || 2),

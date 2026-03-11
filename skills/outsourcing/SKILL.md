@@ -64,6 +64,16 @@ Claude should keep its contribution compact and only provide:
 
 The PM must provide the task background explicitly. Workers must not hallucinate it.
 
+## Claude session nonce
+
+When this plugin starts, Claude should generate a short session nonce and print it once in the conversation, for example:
+
+`outsourcing session nonce: 7f3c2e1a`
+
+Claude should pass the same value to the orchestrator with `--claude-session-nonce`.
+
+This keeps Claude token measurement stable even when multiple Claude Code sessions are open in the same project.
+
 ## Observer Mode
 
 - Preferred observer backend: `tmux`
@@ -92,8 +102,9 @@ Claude's final report must include:
 ## Execution rules
 
 1. Decompose the work.
-2. Produce compact payloads.
-3. Assemble worker prompts from local templates.
-4. Delegate implementation to Codex workers.
-5. Validate with local gates and worker reports.
-6. Keep Claude's final synthesis short.
+2. Generate and print a short Claude session nonce.
+3. Produce compact payloads.
+4. Assemble worker prompts from local templates.
+5. Delegate implementation to Codex workers, passing the nonce to the orchestrator.
+6. Validate with local gates and worker reports.
+7. Keep Claude's final synthesis short.

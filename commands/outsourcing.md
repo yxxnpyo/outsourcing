@@ -40,4 +40,5 @@ Examples:
 
 1. Read `${CLAUDE_PLUGIN_ROOT}/skills/outsourcing/SKILL.md`
 2. Follow the skill workflow using `$ARGUMENTS`
-3. Keep fixed worker templates on disk; do not restate them fully in chat
+3. Print a short Claude session nonce once, then pass it through `--claude-session-nonce` when starting the orchestrator
+4. Keep fixed worker templates on disk; do not restate them fully in chat
