@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Outsourcing Task Payload",
+  "type": "object",
+  "required": [
+    "task_name",
+    "worker_role",
+    "working_dir",
+    "task_background",
+    "requests",
+    "targets",
+    "signatures",
+    "constraints",
+    "recommended_skills"
+  ],
+  "properties": {
+    "task_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "worker_role": {
+      "type": "string",
+      "minLength": 1
+    },
+    "working_dir": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_background": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "requests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "purpose"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "signatures": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "recommended_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

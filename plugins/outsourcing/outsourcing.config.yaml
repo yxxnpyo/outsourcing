@@ -1,0 +1,27 @@
+outsourcing:
+  defaults:
+    command: "codex exec --dangerously-bypass-approvals-and-sandbox --ephemeral"
+    observer_command: "codex --dangerously-bypass-approvals-and-sandbox --no-alt-screen"
+    observer_mode: "tmux"
+    model: "codex-5.4"
+    max_worker_count: 6
+
+  settings:
+    timeout: 3600
+    max_retries: 2
+    min_parallel_tasks: 3
+    token_estimator:
+      claude_base_prompt_weight: 1.0
+      claude_payload_weight: 1.0
+      claude_result_review_weight: 1.0
+      claude_final_report_weight: 1.0
+      claude_retry_weight: 1.0
+      claude_solo_worker_transfer_ratio: 1.0
+      worker_prompt_overhead: 1.2
+
+  context:
+    project: "outsourcing plugin"
+    description: "Claude PM / Codex outsourcing workflow"
+    reference_files: []
+
+  tasks: []

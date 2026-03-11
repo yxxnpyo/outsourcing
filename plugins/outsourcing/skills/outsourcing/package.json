@@ -1,0 +1,9 @@
+{
+  "name": "outsourcing-skill",
+  "version": "0.1.0",
+  "private": true,
+  "description": "outsourcing - Claude PM / Codex outsourced worker orchestrator",
+  "dependencies": {
+    "yaml": "^2.8.2"
+  }
+}

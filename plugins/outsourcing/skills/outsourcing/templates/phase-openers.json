@@ -1,0 +1,6 @@
+{
+  "planning": "Reporting task kickoff completion.",
+  "implementation": "Reporting implementation completion.",
+  "verification": "Reporting verification results.",
+  "final": "Reporting final delivery completion."
+}

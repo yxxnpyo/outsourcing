@@ -1,0 +1,4 @@
+node_modules/
+dist/
+src/utils/*.ts
+!src/utils/.gitkeep

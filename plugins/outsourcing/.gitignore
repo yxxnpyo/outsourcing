@@ -1,0 +1,5 @@
+.DS_Store
+**/.DS_Store
+skills/outsourcing/.jobs/
+skills/outsourcing/node_modules/
+npm-debug.log*

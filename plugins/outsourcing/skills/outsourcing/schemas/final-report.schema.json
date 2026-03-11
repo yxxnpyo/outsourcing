@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Outsourcing Final Report",
+  "type": "object",
+  "required": [
+    "job_id",
+    "status",
+    "task_summaries",
+    "retry_history",
+    "risks",
+    "claude_solo_estimated_tokens",
+    "claude_outsourcing_tokens",
+    "claude_outsourcing_tokens_estimated",
+    "claude_outsourcing_tokens_actual",
+    "claude_cache_tokens",
+    "claude_cache_creation_tokens",
+    "claude_cache_read_tokens",
+    "claude_outsourcing_estimation_error_rate",
+    "claude_outsourcing_measurement_mode",
+    "claude_token_savings_rate",
+    "codex_worker_tokens",
+    "codex_worker_tokens_estimated",
+    "codex_worker_tokens_actual",
+    "codex_worker_estimation_error_rate",
+    "codex_worker_measurement_mode",
+    "claude_estimation_basis"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "success",
+        "partial",
+        "failed"
+      ]
+    },
+    "task_summaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "task_name",
+          "status",
+          "summary"
+        ],
+        "properties": {
+          "task_name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "retry_history": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "claude_solo_estimated_tokens": {
+      "type": [
+        "number",
+        "string"
+      ]
+    },
+    "claude_outsourcing_tokens": {
+      "type": [
+        "number",
+        "string"
+      ]
+    },
+    "claude_outsourcing_tokens_estimated": {
+      "type": [
+        "number",
+        "string",
+        "null"
+      ]
+    },
+    "claude_outsourcing_tokens_actual": {
+      "type": [
+        "number",
+        "string",
+        "null"
+      ]
+    },
+    "claude_cache_tokens": {
+      "type": [
+        "number",
+        "string",
+        "null"
+      ]
+    },
+    "claude_cache_creation_tokens": {
+      "type": [
+        "number",
+        "string",
+        "null"
+      ]
+    },
+    "claude_cache_read_tokens": {
+      "type": [
+        "number",
+        "string",
+        "null"
+      ]
+    },
+    "claude_outsourcing_estimation_error_rate": {
+      "type": [
+        "number",
+        "string",
+        "null"
+      ]
+    },
+    "claude_outsourcing_measurement_mode": {
+      "type": "string",
+      "enum": [
+        "actual",
+        "estimated"
+      ]
+    },
+    "claude_token_savings_rate": {
+      "type": [
+        "number",
+        "string"
+      ]
+    },
+    "codex_worker_tokens": {
+      "type": [
+        "number",
+        "string"
+      ]
+    },
+    "codex_worker_tokens_estimated": {
+      "type": [
+        "number",
+        "string",
+        "null"
+      ]
+    },
+    "codex_worker_tokens_actual": {
+      "type": [
+        "number",
+        "string",
+        "null"
+      ]
+    },
+    "codex_worker_estimation_error_rate": {
+      "type": [
+        "number",
+        "string",
+        "null"
+      ]
+    },
+    "codex_worker_measurement_mode": {
+      "type": "string",
+      "enum": [
+        "actual",
+        "mixed",
+        "estimated"
+      ]
+    },
+    "claude_estimation_basis": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

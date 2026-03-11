@@ -1,0 +1,41 @@
+outsourcing:
+  defaults:
+    command: "codex exec --dangerously-bypass-approvals-and-sandbox --ephemeral"
+    observer_command: "codex --dangerously-bypass-approvals-and-sandbox --no-alt-screen"
+  settings:
+    timeout: 900
+    max_retries: 1
+  tasks:
+    - name: truncate-text
+      cwd: "/Users/hongyp/Desktop/hongyp/dev/codex/outsourcing/plugin/test-fixtures/practical-smoke-workspace"
+      gates:
+        - name: "file-exists"
+          command: "[ -f src/utils/truncateText.ts ]"
+        - name: "signature-check"
+          command: "grep -q 'export function truncateText' src/utils/truncateText.ts"
+        - name: "type-check"
+          command: "npx tsc --noEmit --target ES2022 --module NodeNext --moduleResolution NodeNext src/utils/truncateText.ts"
+      payload:
+        task_name: "truncate-text"
+        worker_role: "truncate-text outsourced implementation worker"
+        working_dir: "/Users/hongyp/Desktop/hongyp/dev/codex/outsourcing/plugin/test-fixtures/practical-smoke-workspace"
+        task_background:
+          - "This task establishes a shared utility for safely truncating displayed text."
+          - "It should provide a reusable helper before follow-up UI and list tasks depend on the same truncation rule."
+        requests:
+          - "Implement src/utils/truncateText.ts."
+          - "Keep the exact signature truncateText(text: string, maxLength: number): string."
+          - "Return an empty string when maxLength is 0 or lower."
+          - "If maxLength is 3 or lower, return text.slice(0, safeLength) without an ellipsis."
+          - "Append ... only when truncation is actually needed."
+        targets:
+          - path: "src/utils/truncateText.ts"
+            purpose: "Shared text truncation utility"
+        signatures:
+          - "export function truncateText(text: string, maxLength: number): string"
+        constraints:
+          - "Assume TypeScript strict mode."
+          - "Do not add runtime typeof checks."
+          - "Do not create extra files."
+        recommended_skills:
+          - "verification-before-completion"

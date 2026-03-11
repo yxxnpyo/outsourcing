@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "outsourcing",
-      "source": ".",
+      "source": "./plugins/outsourcing",
       "description": "Claude PM / Codex outsourced workers orchestration for shifting implementation-token usage away from Claude Code",
       "version": "0.2.0",
       "author": {
