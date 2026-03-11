@@ -1,0 +1,30 @@
+outsourcing:
+  defaults:
+    command: "bash /Users/hongyp/Desktop/hongyp/dev/codex/outsourcing/plugin/test-fixtures/fake-outsourcing-worker.sh"
+    observer_command: "bash /Users/hongyp/Desktop/hongyp/dev/codex/outsourcing/plugin/test-fixtures/fake-outsourcing-worker.sh"
+  settings:
+    timeout: 10
+    max_retries: 1
+  tasks:
+    - name: sample-task
+      cwd: "/Users/hongyp/Desktop/hongyp/dev/codex/outsourcing"
+      gates:
+        - name: "always-pass"
+          command: "true"
+      payload:
+        task_name: "sample-task"
+        worker_role: "sample-task outsourced implementation worker"
+        working_dir: "/Users/hongyp/Desktop/hongyp/dev/codex/outsourcing"
+        task_background:
+          - "This task exists to validate observer marker parsing."
+        requests:
+          - "Print planning and implementation phase memos."
+        targets:
+          - path: "mock.txt"
+            purpose: "synthetic output"
+        signatures:
+          - "export function sample(): void"
+        constraints:
+          - "Do not modify real project files."
+        recommended_skills:
+          - "verification-before-completion"

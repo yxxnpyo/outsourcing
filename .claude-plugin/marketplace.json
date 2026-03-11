@@ -1,0 +1,28 @@
+{
+  "name": "outsourcing-marketplace",
+  "owner": {
+    "name": "hongyp"
+  },
+  "metadata": {
+    "description": "Marketplace entry for the outsourcing Claude Code plugin",
+    "version": "0.2.0"
+  },
+  "plugins": [
+    {
+      "name": "outsourcing",
+      "source": ".",
+      "description": "Claude PM / Codex outsourced workers orchestration for shifting implementation-token usage away from Claude Code",
+      "version": "0.2.0",
+      "author": {
+        "name": "hongyp"
+      },
+      "tags": [
+        "claude-code",
+        "codex",
+        "delegation",
+        "orchestration",
+        "tmux"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+outsourcing:
+  defaults:
+    command: "codex exec --dangerously-bypass-approvals-and-sandbox --ephemeral"
+    observer_command: "codex --dangerously-bypass-approvals-and-sandbox --no-alt-screen"
+  settings:
+    timeout: 1200
+    max_retries: 1
+  tasks:
+    - name: truncate-text
+      cwd: "/Users/hongyp/Desktop/hongyp/dev/codex/outsourcing/plugin/test-fixtures/practical-smoke-workspace"
+      gates:
+        - name: "file-exists"
+          command: "[ -f src/utils/truncateText.ts ]"
+        - name: "signature-check"
+          command: "grep -q 'export function truncateText' src/utils/truncateText.ts"
+        - name: "type-check"
+          command: "npx tsc --noEmit --target ES2022 --module NodeNext --moduleResolution NodeNext src/utils/truncateText.ts"
+      payload:
+        task_name: "truncate-text"
+        worker_role: "truncate-text outsourced implementation worker"
+        working_dir: "/Users/hongyp/Desktop/hongyp/dev/codex/outsourcing/plugin/test-fixtures/practical-smoke-workspace"
+        task_background:
+          - "This task establishes a shared utility for safely truncating displayed text."
+          - "The helper should stay independent so multiple UI components can reuse the same truncation rule."
+        requests:
+          - "Implement src/utils/truncateText.ts."
+          - "Keep the exact signature truncateText(text: string, maxLength: number): string."
+          - "Return an empty string when maxLength is 0 or lower."
+          - "If maxLength is 3 or lower, return text.slice(0, safeLength) without an ellipsis."
+          - "Append ... only when truncation is actually needed."
+        targets:
+          - path: "src/utils/truncateText.ts"
+            purpose: "Shared text truncation utility"
+        signatures:
+          - "export function truncateText(text: string, maxLength: number): string"
+        constraints:
+          - "Assume TypeScript strict mode."
+          - "Do not add runtime typeof checks."
+          - "Do not create extra files."
+        recommended_skills:
+          - "verification-before-completion"
+    - name: clamp-number
+      cwd: "/Users/hongyp/Desktop/hongyp/dev/codex/outsourcing/plugin/test-fixtures/practical-smoke-workspace"
+      gates:
+        - name: "file-exists"
+          command: "[ -f src/utils/clampNumber.ts ]"
+        - name: "signature-check"
+          command: "grep -q 'export function clampNumber' src/utils/clampNumber.ts"
+        - name: "type-check"
+          command: "npx tsc --noEmit --target ES2022 --module NodeNext --moduleResolution NodeNext src/utils/clampNumber.ts"
+      payload:
+        task_name: "clamp-number"
+        worker_role: "clamp-number outsourced implementation worker"
+        working_dir: "/Users/hongyp/Desktop/hongyp/dev/codex/outsourcing/plugin/test-fixtures/practical-smoke-workspace"
+        task_background:
+          - "This task provides a shared utility for safely constraining numeric ranges."
+          - "Follow-up slider and form input flows should be able to reuse the same clamp helper."
+        requests:
+          - "Implement src/utils/clampNumber.ts."
+          - "Keep the exact signature clampNumber(value: number, min: number, max: number): number."
+          - "If min is greater than max, swap them internally before clamping."
+          - "Use an idiomatic clamp pattern."
+        targets:
+          - path: "src/utils/clampNumber.ts"
+            purpose: "Shared numeric range utility"
+        signatures:
+          - "export function clampNumber(value: number, min: number, max: number): number"
+        constraints:
+          - "Assume TypeScript strict mode."
+          - "Do not add runtime typeof checks."
+          - "Do not create extra files."
+        recommended_skills:
+          - "verification-before-completion"
+    - name: format-iso-date
+      cwd: "/Users/hongyp/Desktop/hongyp/dev/codex/outsourcing/plugin/test-fixtures/practical-smoke-workspace"
+      gates:
+        - name: "file-exists"
+          command: "[ -f src/utils/formatIsoDate.ts ]"
+        - name: "signature-check"
+          command: "grep -q 'export function formatIsoDate' src/utils/formatIsoDate.ts"
+        - name: "type-check"
+          command: "npx tsc --noEmit --target ES2022 --module NodeNext --moduleResolution NodeNext src/utils/formatIsoDate.ts"
+      payload:
+        task_name: "format-iso-date"
+        worker_role: "format-iso-date outsourced implementation worker"
+        working_dir: "/Users/hongyp/Desktop/hongyp/dev/codex/outsourcing/plugin/test-fixtures/practical-smoke-workspace"
+        task_background:
+          - "This task provides a shared utility for formatting ISO strings into UI-friendly dates."
+          - "Follow-up list and detail views should be able to share one consistent date formatting rule."
+        requests:
+          - "Implement src/utils/formatIsoDate.ts."
+          - "Keep the exact signature formatIsoDate(input: string, locale?: string): string."
+          - "Use Intl.DateTimeFormat."
+          - "Set explicit year/month/day options."
+          - "Return an empty string for invalid date input."
+        targets:
+          - path: "src/utils/formatIsoDate.ts"
+            purpose: "Shared ISO date formatting utility"
+        signatures:
+          - "export function formatIsoDate(input: string, locale?: string): string"
+        constraints:
+          - "Assume TypeScript strict mode."
+          - "Do not rely on the default toLocaleDateString behavior."
+          - "Do not create extra files."
+        recommended_skills:
+          - "verification-before-completion"

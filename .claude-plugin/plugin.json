@@ -1,0 +1,19 @@
+{
+  "name": "outsourcing",
+  "version": "0.2.0",
+  "description": "Claude PM / Codex outsourced workers orchestration for shifting implementation-token usage away from Claude Code",
+  "author": {
+    "name": "hongyp"
+  },
+  "homepage": "https://github.com/hongyp/outsourcing",
+  "repository": "https://github.com/hongyp/outsourcing",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "codex",
+    "outsourcing",
+    "orchestration",
+    "tmux",
+    "delegation"
+  ]
+}
