@@ -78,8 +78,16 @@ This keeps Claude token measurement stable even when multiple Claude Code sessio
 
 - Preferred observer backend: `tmux`
 - Observer panes exist for human visibility
+- Worker launches should preserve the task working directory so Codex opens in the requested project path
+- On a first run in an untrusted directory, Codex may show its directory trust prompt before work begins
 - Claude should not continuously read implementation logs from the panes
 - The orchestrator only parses structured markers and state transitions
+
+## Worker execution defaults
+
+- Default exec command: `codex exec --sandbox danger-full-access --ask-for-approval never --ephemeral`
+- Default observer command: `codex --sandbox danger-full-access --ask-for-approval never --no-alt-screen`
+- Task-level custom `command` and `observer_command` overrides remain supported
 
 ## Re-delegation policy
 

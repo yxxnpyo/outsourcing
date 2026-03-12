@@ -1,7 +1,7 @@
 outsourcing:
   defaults:
-    command: "codex exec --dangerously-bypass-approvals-and-sandbox --ephemeral"
-    observer_command: "codex --dangerously-bypass-approvals-and-sandbox --no-alt-screen"
+    command: "codex exec --sandbox danger-full-access --ask-for-approval never --ephemeral"
+    observer_command: "codex --sandbox danger-full-access --ask-for-approval never --no-alt-screen"
     observer_mode: "tmux"
     model: "codex-5.4"
     max_worker_count: 6

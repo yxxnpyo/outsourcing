@@ -83,6 +83,35 @@ function splitCommand(command) {
   return tokens;
 }
 
+function hasExplicitCd(args) {
+  for (let i = 0; i < args.length; i++) {
+    const token = String(args[i] || '');
+    if (token === '-C' || token === '--cd') return true;
+    if (token.startsWith('--cd=')) return true;
+  }
+  return false;
+}
+
+function isCodexProgram(program) {
+  return path.basename(String(program || '')) === 'codex';
+}
+
+function normalizeCodexCommand(command, cwd) {
+  const tokens = splitCommand(command);
+  if (!tokens || tokens.length === 0) return null;
+  const [program, ...args] = tokens;
+  if (!isCodexProgram(program) || !cwd || hasExplicitCd(args)) {
+    return { program, args };
+  }
+  const normalizedArgs = [...args];
+  if (normalizedArgs[0] === 'exec') {
+    normalizedArgs.splice(1, 0, '--cd', cwd);
+  } else {
+    normalizedArgs.unshift('--cd', cwd);
+  }
+  return { program, args: normalizedArgs };
+}
+
 function atomicWriteJson(filePath, payload) {
   const tmpPath = `${filePath}.${process.pid}.${crypto.randomBytes(4).toString('hex')}.tmp`;
   fs.writeFileSync(tmpPath, JSON.stringify(payload, null, 2), 'utf8');
@@ -241,8 +270,8 @@ function main() {
     pid: null,
   });
 
-  const tokens = splitCommand(mode === 'observer' ? (observerCommand || command) : command);
-  if (!tokens || tokens.length === 0) {
+  const launchSpec = normalizeCodexCommand(mode === 'observer' ? (observerCommand || command) : command, cwd);
+  if (!launchSpec || !launchSpec.program) {
     finalizeStatus(statusPath, {
       member,
       state: 'error',
@@ -254,8 +283,7 @@ function main() {
     process.exit(1);
   }
 
-  const program = tokens[0];
-  const args = tokens.slice(1);
+  const { program, args } = launchSpec;
   const finalArgs = [...args];
   if (mode === 'exec') {
     if (fs.existsSync(OUTPUT_SCHEMA_PATH)) {
@@ -407,3 +435,8 @@ function main() {
 if (require.main === module) {
   main();
 }
+
+module.exports = {
+  normalizeCodexCommand,
+  splitCommand,
+};

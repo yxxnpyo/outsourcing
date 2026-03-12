@@ -174,9 +174,16 @@ This repository now includes a marketplace manifest so the published repo can al
 2. Claude generates a short session nonce and prints it once in the conversation, for example `outsourcing session nonce: 7f3c2e1a`.
 3. Start from Claude Code with `/outsourcing ...`.
 4. Claude decomposes the work, emits worker payloads, and passes the same nonce to the orchestrator.
-5. The plugin launches Codex workers.
+5. The plugin launches Codex workers with explicit full-access defaults and preserves each task working directory.
 6. Workers implement and report.
 7. Claude synthesizes the final result.
+
+## Default worker permissions
+
+- Exec default: `codex exec --sandbox danger-full-access --ask-for-approval never --ephemeral`
+- Observer default: `codex --sandbox danger-full-access --ask-for-approval never --no-alt-screen`
+- Observer workers open in the task directory. If that directory is not yet trusted by Codex, the trust prompt may appear before the worker starts.
+- Custom task-level `command` and `observer_command` values are still supported.
 
 ## Local plugin test
 
@@ -216,6 +223,22 @@ These fixtures validate:
 - gate passes
 - final report generation
 - token metric aggregation
+- launch command normalization
+- marketplace copy sync verification
+
+## Marketplace sync
+
+`plugin/` is the editable source of truth. Refresh the marketplace copy after root plugin changes:
+
+```bash
+bash plugin/scripts/sync-marketplace.sh
+```
+
+Check whether the nested copy is already up to date:
+
+```bash
+bash plugin/scripts/sync-marketplace.sh --check
+```
 
 ## Verification status
 

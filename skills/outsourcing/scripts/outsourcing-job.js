@@ -9,10 +9,9 @@ const SCRIPT_DIR = __dirname;
 const SKILL_DIR = path.resolve(SCRIPT_DIR, '..');
 const PLUGIN_DIR = path.resolve(SKILL_DIR, '../..');
 const WORKER_PATH = path.join(SCRIPT_DIR, 'outsourcing-job-worker.js');
-const OBSERVER_PATH = path.join(SCRIPT_DIR, 'outsourcing-observer.js');
 const CONFIG_FILE = path.join(PLUGIN_DIR, 'outsourcing.config.yaml');
-const DEFAULT_CODEX_COMMAND = 'codex exec --dangerously-bypass-approvals-and-sandbox --ephemeral';
-const DEFAULT_OBSERVER_COMMAND = 'codex --dangerously-bypass-approvals-and-sandbox --no-alt-screen';
+const DEFAULT_CODEX_COMMAND = 'codex exec --sandbox danger-full-access --ask-for-approval never --ephemeral';
+const DEFAULT_OBSERVER_COMMAND = 'codex --sandbox danger-full-access --ask-for-approval never --no-alt-screen';
 const DEFAULT_TIMEOUT_SEC = 3600;
 
 function exitWithError(message) {
@@ -752,6 +751,7 @@ function createWorkerFiles(jobDir, task, basePrompt) {
     queuedAt: new Date().toISOString(),
     round: task.round,
     command: task.command,
+    cwd: task.cwd,
   });
 }
 
@@ -794,7 +794,7 @@ function launchObserverWorkers(jobDir, tasks, timeoutSec) {
       '--timeout', shellQuote(String(timeoutSec)),
     ].join(' ');
     if (!created) {
-      runTmux(['new-session', '-d', '-s', session, '-n', task.safeName, command]);
+      runTmux(['new-session', '-d', '-s', session, '-c', task.cwd, '-n', task.safeName, command]);
       try {
         runTmux(['set-option', '-t', session, 'remain-on-exit', 'on']);
       } catch {
@@ -807,7 +807,7 @@ function launchObserverWorkers(jobDir, tasks, timeoutSec) {
       }
       created = true;
     } else {
-      runTmux(['split-window', '-t', session, '-v', command]);
+      runTmux(['split-window', '-t', session, '-v', '-c', task.cwd, command]);
       runTmux(['select-layout', '-t', session, 'tiled']);
       try {
         runTmux(['select-pane', '-t', session, '-T', task.safeName]);
@@ -1407,6 +1407,7 @@ function relaunchTask(jobDir, jobMeta, task, correction) {
     state: 'queued',
     queuedAt: new Date().toISOString(),
     command: task.command,
+    cwd: task.cwd,
     retry: currentRetryCount + 1,
   });
 
@@ -1424,7 +1425,7 @@ function relaunchTask(jobDir, jobMeta, task, correction) {
       '--mode', 'observer',
       '--timeout', shellQuote(String(timeoutSec)),
     ].join(' ');
-    runTmux(['split-window', '-t', jobMeta.observer.session, '-v', command]);
+    runTmux(['split-window', '-t', jobMeta.observer.session, '-v', '-c', task.cwd, command]);
     runTmux(['select-layout', '-t', jobMeta.observer.session, 'tiled']);
     return;
   }
@@ -1658,6 +1659,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+  parseOutsourcingConfig,
   readClaudeSessionUsageSnapshot,
   matchClaudeSessionFile,
   readSessionUsageSnapshot,
