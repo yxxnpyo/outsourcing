@@ -1,6 +1,6 @@
 {
   "name": "outsourcing-skill",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "description": "outsourcing - Claude PM / Codex outsourced worker orchestrator",
   "dependencies": {

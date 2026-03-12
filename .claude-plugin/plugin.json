@@ -1,6 +1,6 @@
 {
   "name": "outsourcing",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Claude PM / Codex outsourced workers orchestration for shifting implementation-token usage away from Claude Code",
   "author": {
     "name": "hongyp"

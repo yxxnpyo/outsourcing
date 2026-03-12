@@ -96,10 +96,25 @@ function isCodexProgram(program) {
   return path.basename(String(program || '')) === 'codex';
 }
 
+function stripUnsupportedCodexArgs(args) {
+  const sanitized = [];
+  for (let i = 0; i < args.length; i++) {
+    const token = String(args[i] || '');
+    if (token === '--claude-session-nonce') {
+      i++;
+      continue;
+    }
+    if (token.startsWith('--claude-session-nonce=')) continue;
+    sanitized.push(args[i]);
+  }
+  return sanitized;
+}
+
 function normalizeCodexCommand(command, cwd) {
   const tokens = splitCommand(command);
   if (!tokens || tokens.length === 0) return null;
-  const [program, ...args] = tokens;
+  const [program, ...rawArgs] = tokens;
+  const args = isCodexProgram(program) ? stripUnsupportedCodexArgs(rawArgs) : rawArgs;
   if (!isCodexProgram(program) || !cwd || hasExplicitCd(args)) {
     return { program, args };
   }

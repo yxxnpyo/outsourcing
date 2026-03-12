@@ -64,6 +64,19 @@ assert.deepEqual(
   'absolute codex paths should also receive cwd injection'
 );
 
+const leakedNonceLaunch = worker.normalizeCodexCommand(
+  'codex exec --claude-session-nonce nonce-abc123 --sandbox danger-full-access --ask-for-approval never --ephemeral',
+  '/tmp/worker-project'
+);
+assert.deepEqual(
+  leakedNonceLaunch,
+  {
+    program: 'codex',
+    args: ['exec', '--cd', '/tmp/worker-project', '--sandbox', 'danger-full-access', '--ask-for-approval', 'never', '--ephemeral'],
+  },
+  'nonce flags leaked into codex commands should be stripped before launch'
+);
+
 const preservedLaunch = worker.normalizeCodexCommand(
   'codex exec --cd=/tmp/already-set --sandbox danger-full-access --ask-for-approval never --ephemeral',
   '/tmp/worker-project'

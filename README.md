@@ -293,6 +293,7 @@ For reliable matching when multiple Claude Code sessions are open in the same pr
 
 - Claude prints a one-line nonce into the conversation
 - the same nonce is passed to the orchestrator with `--claude-session-nonce`
+- do not append that flag to `codex` or `codex exec`; it is only for the outsourcing start command
 - the plugin prefers session files whose message content contains that nonce
 
 Without a nonce, the plugin falls back to a best-effort match using project directory and timestamps.

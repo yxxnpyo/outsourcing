@@ -72,6 +72,8 @@ When this plugin starts, Claude should generate a short session nonce and print 
 
 Claude should pass the same value to the orchestrator with `--claude-session-nonce`.
 
+Do not append `--claude-session-nonce` to `codex`, `codex exec`, `command`, or `observer_command`. It belongs only on the outsourcing orchestrator start command.
+
 This keeps Claude token measurement stable even when multiple Claude Code sessions are open in the same project.
 
 ## Observer Mode

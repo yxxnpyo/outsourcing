@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Marketplace entry for the outsourcing Claude Code plugin",
-    "version": "0.2.1"
+    "version": "0.2.2"
   },
   "plugins": [
     {
       "name": "outsourcing",
       "source": "./plugins/outsourcing",
       "description": "Claude PM / Codex outsourced workers orchestration for shifting implementation-token usage away from Claude Code",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "author": {
         "name": "hongyp"
       },
